@@ -8,6 +8,7 @@ interface TeamMemberCardProps {
   role: string;
   roleType: 'founder' | 'coordinator' | 'envoy' | 'lead' | 'mentor' | 'volunteer';
   image: string;
+  course?: string;
   email?: string;
   linkedin?: string;
   github?: string;
@@ -15,8 +16,8 @@ interface TeamMemberCardProps {
   website?: string;
   bio?: string;
   team?: string;
-  imagePosition?: string; // simple crop shift, e.g. 'center top' or '30% center'
-  imageFocus?: string; // exact face point in the photo, e.g. '75% 47%' (x% y%) -> centered automatically
+  imagePosition?: string;
+  imageFocus?: string;
 }
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '';
@@ -29,7 +30,6 @@ const parseFocus = (focus?: string) => {
   return { x, y };
 };
 
-// Centers the given focus point (the face) inside the frame, zooming in only as much as needed to avoid empty edges.
 const FocusedPhoto = ({ src, alt, focus }: { src: string; alt: string; focus: { x: number; y: number } }) => {
   const boxRef = useRef<HTMLDivElement>(null);
   const [box, setBox] = useState<{ w: number; h: number } | null>(null);
@@ -74,7 +74,7 @@ const SocialLink = ({ href, icon: Icon, label }: { href: string; icon: React.Com
   </motion.a>
 );
 
-const TeamMemberCard = ({ name, role, roleType, image, email, linkedin, github, metaWiki, website, bio, team, imagePosition, imageFocus }: TeamMemberCardProps) => {
+const TeamMemberCard = ({ name, role, roleType, image, course, email, linkedin, github, metaWiki, website, bio, team, imagePosition, imageFocus }: TeamMemberCardProps) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const isFeatureCard = roleType === 'founder' || roleType === 'coordinator' || roleType === 'mentor';
   const isCompactCard = roleType === 'volunteer';
@@ -111,6 +111,7 @@ const TeamMemberCard = ({ name, role, roleType, image, email, linkedin, github, 
           <div className='flex flex-1 flex-col justify-center p-6 sm:p-8'>
             <div className='mb-3'>{roleBadge}</div>
             <h3 className='text-2xl font-black tracking-tight text-slate-900 sm:text-3xl'>{name}</h3>
+            {course && <p className='mt-1 text-sm font-normal text-slate-900'>{course}</p>}
             {bio && <p className='mt-3 line-clamp-3 max-w-2xl whitespace-pre-line text-sm leading-6 text-slate-600 sm:text-base'>{bio}</p>}
             <div className='mt-5'>{socialLinks}</div>
           </div>
@@ -121,6 +122,7 @@ const TeamMemberCard = ({ name, role, roleType, image, email, linkedin, github, 
           <div className={isCompactCard ? 'p-3' : 'p-5'}>
             <div>{roleBadge}</div>
             <h3 className={isCompactCard ? 'mt-2 text-base font-black text-slate-900' : 'mt-3 text-xl font-black text-slate-900'}>{name}</h3>
+            {course && <p className='mt-1 text-sm font-normal text-slate-900'>{course}</p>}
             {bio && <p className={isCompactCard ? 'mt-1 line-clamp-2 text-xs leading-5 text-slate-600' : 'mt-2 line-clamp-2 text-sm leading-6 text-slate-600'}>{bio}</p>}
             <div className={isCompactCard ? 'mt-3 border-t border-slate-200 pt-3' : 'mt-4 border-t border-slate-200 pt-4'}>{socialLinks}</div>
           </div>
@@ -133,7 +135,7 @@ const TeamMemberCard = ({ name, role, roleType, image, email, linkedin, github, 
         <motion.div initial={{ opacity: 0, scale: 0.96, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 12 }} transition={{ type: 'spring', stiffness: 260, damping: 24 }} className='max-h-[90vh] w-full max-w-3xl overflow-auto rounded-3xl bg-white shadow-2xl' onClick={(e) => e.stopPropagation()}>
           <div className='flex flex-col sm:flex-row sm:items-stretch'>
             <div className='relative aspect-square w-full shrink-0 overflow-hidden bg-slate-200 sm:aspect-auto sm:min-h-[22rem] sm:w-72'>{renderPhoto()}</div>
-            <div className='p-7 sm:p-9'><div>{roleBadge}</div><h2 className='mt-4 text-3xl font-black text-slate-900'>{name}</h2>{bio && <p className='mt-5 whitespace-pre-line leading-7 text-slate-600'>{bio}</p>}<div className='mt-7'>{socialLinks}</div></div>
+            <div className='p-7 sm:p-9'><div>{roleBadge}</div><h2 className='mt-4 text-3xl font-black text-slate-900'>{name}</h2>{course && <p className='mt-1 text-sm font-normal text-slate-900'>{course}</p>}{bio && <p className='mt-5 whitespace-pre-line leading-7 text-slate-600'>{bio}</p>}<div className='mt-7'>{socialLinks}</div></div>
           </div>
         </motion.div>
       </motion.div>}
